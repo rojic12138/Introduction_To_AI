@@ -16,6 +16,98 @@ Output the least number of steps needed. If the problem can't be solved, print -
 样例输出
 11
 
+AC代码：(guyutongxue）
+#include <iostream>
+#include <queue>
+using namespace std;
+
+int m, n;
+bool closed[3002][3002][2] = {};
+struct Status {
+    int leftMissionary;
+    int leftCannibal;
+    bool isBoatLeft;
+    int step;
+    Status(int m, int c, bool b = true, int s = 0)
+        : leftMissionary(m), leftCannibal(c), isBoatLeft(b), step(s) {}
+    bool canMove(int movingMissonary, int movingCannibal) {
+        int& i = movingMissonary;
+        int& j = movingCannibal;
+        if ((i >= j || i == 0)) {
+            if (isBoatLeft) {
+                return ((leftMissionary - i >= 0) && (leftCannibal - j >= 0) &&
+                    leftMissionary - i >= leftCannibal - j ||
+                    leftMissionary - i == 0) &&
+                    (m - leftMissionary + i >= m - leftCannibal + j ||
+                        m - leftMissionary + i == 0) &&
+                    !closed[leftMissionary - i][leftCannibal - j][!isBoatLeft];
+            }
+            else {
+                return ((leftMissionary + i >= 0) && (leftCannibal + j >= 0) &&
+                    leftMissionary + i >= leftCannibal + j ||
+                    leftMissionary + i == 0) &&
+                    (m - leftMissionary - i >= m - leftCannibal - j ||
+                        m - leftMissionary - i == 0) &&
+                    !closed[leftMissionary + i][leftCannibal + j][!isBoatLeft];
+            }
+        }
+        else
+            return false;
+    }
+    Status generate(int movingMissonary, int movingCannibal) {
+        Status result = *this;
+        if (isBoatLeft) {
+            result.leftMissionary -= movingMissonary;
+            result.leftCannibal -= movingCannibal;
+        }
+        else {
+            result.leftMissionary += movingMissonary;
+            result.leftCannibal += movingCannibal;
+        }
+        result.isBoatLeft ^= true;
+        result.step++;
+        closed[result.leftMissionary][result.leftCannibal][result.isBoatLeft] = true;
+        return result;
+    }
+};
+
+queue<Status> fringe;
+
+int main() {
+    cin >> m >> n;
+    fringe.push(Status(m, m));
+    closed[m][m][1] = true;
+    while (!fringe.empty()) {
+        Status node = fringe.front();
+        fringe.pop();
+        if (node.leftCannibal == 0 && node.leftMissionary == 0) {
+            cout << node.step << endl;
+            return 0;
+        }
+        if (node.isBoatLeft) {
+            for (int i = n; i >= 1; i--) {
+                for (int j = i; j >= 0; j--) {
+                    if (node.canMove(i - j, j)) {
+                        fringe.push(node.generate(i - j, j));
+                    }
+                }
+            }
+        }
+        else {
+            for (int i = 1; i <= n; i++) {
+                for (int j = 0; j <= i; j++) {
+                    if (i == j && j == 0)
+                        continue;
+                    if (node.canMove(i - j, j)) {
+                        fringe.push(node.generate(i - j, j));
+                    }
+                }
+            }
+        }
+    }
+    cout << "-1" << endl;
+}
+
 
 2.Sudoku
 总时间限制: 2000ms 内存限制: 65536kB
