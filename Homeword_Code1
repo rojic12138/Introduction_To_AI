@@ -1,3 +1,4 @@
+1:The missionaries and cannibals
 描述
 The missionaries and cannibals problem is usually stated as follows: 
 Three missionaries and three cannibals are on one side of a river, along with a boat that can hold one or two people. 
@@ -16,7 +17,8 @@ Output the least number of steps needed. If the problem can't be solved, print -
 11
 
 
-bfs AC代码：
+bfs 回溯 与八皇后基本没差别 
+AC代码： 
 #include<iostream>
 #include<string.h>
 #include<algorithm>
